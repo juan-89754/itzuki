@@ -1,107 +1,86 @@
-<header class="topbar">
-
-    <div class="perfil-container">
-
-        <button id="perfilBtn" class="avatar-btn" aria-controls="dropdownMenu" aria-expanded="false"
-
-            aria-label="Menú de usuario">
-
-            <div class="user-photo">
-
-                <i class="fas fa-user"></i>
-
-            </div>
-
-        </button>
-
-
-
-        <div id="dropdownMenu" class="dropdown oculto">
-
-            <form method="post" action="{% url 'login:logout' %}" class='float-end' id="logoutForm">
-
-                {% csrf_token %}
-
-                <button type="submit" class="btn-logout" id="btnCerrarSesion">
-
-                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-
+<header class="topbar-modern">
+    <div class="topbar-content">
+        
+        <div class="perfil-section">
+            <div class="perfil-container">
+                <button id="perfilBtn" class="avatar-btn" aria-controls="dropdownMenu" aria-expanded="false" aria-label="Menú de usuario">
+                    <div class="user-photo">
+                        {% if usuario_perfil.foto %}
+                        <img src="{{ usuario_perfil.foto.url }}" alt="Foto de perfil" class="foto-perfil-img">
+                        {% else %}
+                        <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <span class="user-label">
+                        {% if usuario_perfil %}{{ usuario_perfil.nombre_usuario }}{% else %}{{ user.username }}{% endif %}
+                    </span>
                 </button>
 
-            </form>
-
+                <div id="dropdownMenu" class="dropdown-sidebar oculto">
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-avatar">
+                            {% if usuario_perfil.foto %}
+                            <img src="{{ usuario_perfil.foto.url }}" alt="Foto de perfil" class="foto-perfil-img">
+                            {% else %}
+                            <i class="fas fa-user"></i>
+                            {% endif %}
+                        </div>
+                        <div class="sidebar-user-details">
+                            <span class="sidebar-user-name">
+                                {% if usuario_perfil %}{{ usuario_perfil.nombre_usuario }}{% else %}{{ user.username }}{% endif %}
+                            </span>
+                            <span class="sidebar-user-role">
+                                {% if usuario_perfil and usuario_perfil.cargo %}{{ usuario_perfil.cargo }}{% else %}Administrador{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="sidebar-divider"></div>
+                    <div class="sidebar-menu">
+                        <a href="#" class="sidebar-menu-item">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Mi Perfil</span>
+                        </a>
+                        <a href="#" class="sidebar-menu-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Configuración</span>
+                        </a>
+                        <a href="#" class="sidebar-menu-item">
+                            <i class="fas fa-history"></i>
+                            <span>Historial</span>
+                        </a>
+                    </div>
+                    <div class="sidebar-divider"></div>
+                    <form method="post" action="{% url 'login:logout' %}" id="logoutForm">
+                        {% csrf_token %}
+                        <button type="submit" class="sidebar-logout-btn" id="btnCerrarSesion">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
 
-    </div>
+        <div class="title-section">
+            <h1 class="main-title">{{ titulo_pagina|default:"SISTEMA DE GESTIÓN" }}</h1>
+        </div>
 
-
-
-    <div class="title">{{ titulo_pagina|default:"SISTEMA" }}</div>
-
-
-
-    <div class="icon-right-container">
-
-        <button id="noti" class="notif-btn" aria-label="Notificaciones">
-
-            <div class="rounded-icon-wrapper">
-
-                <i class="fas fa-bell icono-noti"></i>
-
+        <div class="actions-section">
+            <div class="notif-wrapper">
+                <button id="noti" class="icon-btn-glass" aria-label="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-dot"></span> </button>
+                <div id="noti-menu" class="dropdown-sidebar oculto">
+                    <ul class="notif-list">
+                        <li><small>No hay notificaciones nuevas</small></li>
+                    </ul>
+                </div>
             </div>
 
-        </button>
+            <a href="#" class="icon-btn-glass" title="Ajustes">
+                <i class="fas fa-cog"></i>
+            </a>
 
-        <div id="noti-menu" class="oculto">
-
-            <ul>
-
-                </ul>
-
+            
         </div>
-
-
-
-        <a href="#" class="icon-btn-rounded" title="Ajustes">
-
-            <i class="fas fa-cog"></i>
-
-        </a>
-
     </div>
-
-
-
-    <div class="accesibilidad">
-
-        <button id="btn-accesibilidad" title="Opciones de accesibilidad" class="icon-btn-rounded">
-
-            <i class="fas fa-universal-access"></i>
-
-        </button>
-
-        <div id="menu-accesibilidad" class="menu-accesibilidad">
-
-            <button id="aumentar-texto">Aumentar texto</button>
-
-            <button id="disminuir-texto">Disminuir texto</button>
-
-            <button id="alto-contraste">Alto contraste</button>
-
-            <button id="modo-oscuro">Modo oscuro</button>
-
-            <button id="resaltar-enlaces">Resaltar enlaces</button>
-
-            <button id="fuente-legible">Fuente legible</button>
-
-            <button id="cursor-grande">Cursor grande</button>
-
-            <button id="desaturar">Blanco y negro</button>
-
-            <button id="reset-accesibilidad">Restablecer</button>
-
-        </div>
-
-    </div>
-
 </header>

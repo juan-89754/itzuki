@@ -2,6 +2,71 @@
    script_productos.js - Lógica de Inventario BedCom
    ================================================== */
 
+// Función para mostrar notificaciones tipo toast
+function mostrarNotificacion(titulo, mensaje, tipo) {
+    var container = document.getElementById('toast-container-productos');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container-productos';
+        container.className = 'messages-container';
+        container.style.cssText = 'position: fixed; top: 85px; right: 25px; z-index: 10000; display: flex; flex-direction: column; gap: 12px;';
+        document.body.appendChild(container);
+    }
+    
+    // Estilos según el tipo de mensaje
+    var tipoClase = 'info';
+    var iconColor = '#38bdf8';
+    if (tipo === 'success' || tipo === 'correcto') {
+        tipoClase = 'success';
+        iconColor = '#10b981';
+    } else if (tipo === 'error') {
+        tipoClase = 'error';
+        iconColor = '#ef4444';
+    } else if (tipo === 'warning') {
+        tipoClase = 'warning';
+        iconColor = '#f59e0b';
+    }
+    
+    // Icono según el tipo
+    var iconClass = 'fas fa-info-circle';
+    if (tipoClase === 'success') iconClass = 'fas fa-check-circle';
+    else if (tipoClase === 'error') iconClass = 'fas fa-exclamation-circle';
+    else if (tipoClase === 'warning') iconClass = 'fas fa-exclamation-triangle';
+    
+    // Crear el elemento del mensaje
+    var messageDiv = document.createElement('div');
+    messageDiv.className = 'message ' + tipoClase;
+    messageDiv.style.cssText = 'min-width: 320px; padding: 16px 20px; border-radius: 14px; background: #1e293b; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); border-left: 5px solid ' + iconColor + '; animation: slideInToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);';
+    
+    messageDiv.innerHTML = 
+        '<div class="message-content" style="display: flex; align-items: center; gap: 12px;">' +
+            '<i class="' + iconClass + '" style="font-size: 20px; color: ' + iconColor + ';"></i>' +
+            '<span class="text">' + mensaje + '</span>' +
+        '</div>' +
+        '<button type="button" class="close-toast" onclick="cerrarToast(this)" style="background: rgba(255, 255, 255, 0.1); border: none; color: rgba(255, 255, 255, 0.6); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; margin-left: 15px;">' +
+            '<i class="fas fa-times" style="font-size: 14px;"></i>' +
+        '</button>';
+    
+    container.appendChild(messageDiv);
+    
+    // Cerrar después de 5 segundos
+    setTimeout(function() {
+        if (messageDiv.parentNode) {
+            messageDiv.style.animation = 'slideInToast 0.3s ease reverse';
+            setTimeout(function() {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 300);
+        }
+    }, 5000);
+}
+
+// Función para actualizar la tabla de productos
+function actualizarTablaProductos() {
+    window.location.reload();
+}
+
 // Función para validar que el nombre no contenga caracteres especiales
 function validarNombre(nombre) {
     var errores = [];
@@ -280,8 +345,14 @@ $(document).ready(function() {
                 // Producto guardado exitosamente
                 cerrarModal('modalAdd');
                 
-                // Recargar la página para actualizar la tabla
-                window.location.reload();
+                // Mostrar notificación de éxito
+                mostrarNotificacion('Éxito', data.message || 'Producto creado correctamente', 'success');
+                
+                // Limpiar el formulario
+                document.getElementById('formAddProducto').reset();
+                
+                // Actualizar la tabla sin recargar la página
+                actualizarTablaProductos();
             } else {
                 // Mostrar errores
                 if (data.errors) {
@@ -312,7 +383,7 @@ $(document).ready(function() {
         return false;
     });
 
-    // Validación en tiempo real para el formulario de agregar (solo en blur)
+    // Validación en Tiempo real para el formulario de agregar (solo en blur)
     $(document).on('blur', '#formAddProducto input[name="nombre"]', function() {
         var errores = validarNombre(this.value);
         mostrarErroresPorElemento(this, errores);
@@ -415,7 +486,8 @@ $(document).ready(function() {
         .then(function(data) {
             if (data.success) {
                 cerrarModal('modalEdit');
-                window.location.reload();
+                mostrarNotificacion('Éxito', data.message || 'Producto actualizado correctamente', 'success');
+                actualizarTablaProductos();
             } else {
                 if (data.errors) {
                     Object.keys(data.errors).forEach(function(field) {
@@ -442,13 +514,13 @@ $(document).ready(function() {
                 }
                 
                 if (data.message) {
-                    alert(data.message);
+                    mostrarNotificacion('Error', data.message, 'error');
                 }
             }
         })
         .catch(function(error) {
             console.error('Error:', error);
-            alert('Error al conectar con el servidor.');
+            mostrarNotificacion('Error', 'Error al conectar con el servidor.', 'error');
         });
         
         return false;
