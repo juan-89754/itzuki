@@ -29,7 +29,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if render_host:
     ALLOWED_HOSTS.append(render_host)
-    ALLOWED_HOSTS.append('itzuki.xyz') # <--- PON AQUÍ TU DOMINIO REAL
+    ALLOWED_HOSTS.append('itzuki.xyz') # <--- PON AQUÍ TU DOMINIO }
+    ALLOWED_HOSTS.append('www.itzuki.xyz') # <--- AÑADE ESTA LÍNEA
 
 # Application definition
 
@@ -150,3 +151,10 @@ LOGIN_URL = 'login:login'  # URL de login para @login_required
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Configuración para producción en Render
+if not DEBUG:
+    # Fuerza el uso de HTTPS
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
